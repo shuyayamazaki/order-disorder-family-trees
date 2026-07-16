@@ -1,6 +1,6 @@
 # Order-(Dis)Order Family Tree Benchmark
 
-This repository provides the small, reproducible Python entrypoints used in the paper:
+This repository is the official implementation of the methods presented in the paper:
 
 > Yamazaki, Shuya, Huang, Yuyao, Petersen, Martin Hoffmann, Nong, Wei, and Hippalgaonkar, Kedar. *Navigating Order-(Dis)Order Family Trees via Group-Subgroup Transitions*.
 > [arXiv:2604.21386](https://arxiv.org/abs/2604.21386)
