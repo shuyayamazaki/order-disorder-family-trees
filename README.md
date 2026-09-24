@@ -1,8 +1,8 @@
-# Order-(Dis)Order Family Tree Benchmark
+# Order-Disorder Family Tree Benchmark
 
 This repository is the official implementation of the methods presented in the paper:
 
-> Yamazaki, Shuya, Huang, Yuyao, Petersen, Martin Hoffmann, Nong, Wei, and Hippalgaonkar, Kedar. *Navigating Order-(Dis)Order Family Trees via Group-Subgroup Transitions*.
+> Yamazaki, Shuya, Huang, Yuyao, Petersen, Martin Hoffmann, Nong, Wei, and Hippalgaonkar, Kedar. *Navigating Order-Disorder Family Trees via Group-Subgroup Transitions*.
 > [arXiv:2604.21386](https://arxiv.org/abs/2604.21386)
 
 The code is built on [SWORDlib](https://github.com/YuyaoHuang330/SWORD), which should be installed from PyPI with `pip install SWORDlib`.
@@ -77,7 +77,7 @@ If you use this repository, please cite the paper below:
 
 ```bibtex
 @article{yamazaki2026orderdisorder,
-  title = {Navigating Order-(Dis)Order Family Trees via Group-Subgroup Transitions},
+  title = {Navigating Order-Disorder Family Trees via Group-Subgroup Transitions},
   author = {Yamazaki, Shuya and Huang, Yuyao and Petersen, Martin Hoffmann and Nong, Wei and Hippalgaonkar, Kedar},
   journal = {arXiv preprint arXiv:2604.21386},
   year = {2026},
