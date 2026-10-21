@@ -25,29 +25,14 @@ used in accordance with the applicable license.
 
 ## Installation
 
-This project uses [uv](https://docs.astral.sh/uv/) for environment management. Create
-the environment from the locked project specification with Python 3.11:
-
 ```bash
 uv sync --python 3.11
-source .venv/bin/activate
 ```
 
-Use `uv sync --locked` to recreate the environment recorded in `uv.lock` without
-resolving newer packages. `pymatgen==2024.11.13` is pinned because newer unbounded
-releases are incompatible with `SWORDlib==0.1.1` at import time.
-
-Confirm that both command-line interfaces load:
-
-```bash
-python get_sword_dic.py --help
-python family_tree_bench.py --help
-```
+## Input data contract
 
 > **Security note:** pandas pickle files are executable serialization formats. Only
 > read pickle files from trusted sources.
-
-## Input data contract
 
 ### Reference dataframe
 
