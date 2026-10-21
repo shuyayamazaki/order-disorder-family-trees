@@ -1,79 +1,165 @@
 # Order-Disorder Family Tree Benchmark
 
-This repository is the official implementation of the methods presented in the paper:
+Reference implementation for **“Navigating Order-Disorder Family Trees via Group-Subgroup Transitions.”**
 
-> Yamazaki, Shuya, Huang, Yuyao, Petersen, Martin Hoffmann, Nong, Wei, and Hippalgaonkar, Kedar. *Navigating Order-Disorder Family Trees via Group-Subgroup Transitions*.
-> [arXiv:2604.21386](https://arxiv.org/abs/2604.21386)
+> Yamazaki, Shuya; Huang, Yuyao; Petersen, Martin Hoffmann; Nong, Wei; and
+> Hippalgaonkar, Kedar. *Navigating Order-Disorder Family Trees via Group-Subgroup
+> Transitions.* [arXiv:2604.21386](https://arxiv.org/abs/2604.21386).
 
-The code is built on [SWORDlib](https://github.com/YuyaoHuang330/SWORD), which should be installed from PyPI with `pip install SWORDlib`.
+This repository uses [SWORDlib](https://github.com/YuyaoHuang330/SWORD) to attach
+SWORD family-tree labels to crystal structures and to benchmark generated structures
+against an ICSD-derived reference set.
 
-## What this repo does
+## Scope
 
-1. Prepare an ICSD-based reference table with SWORD family dictionaries.
-2. Benchmark generated structures against that ICSD reference.
-3. Report two family-tree metrics:
-   - `FT_disorder`: asks whether an ordered prediction is just one possible ordering of a known disordered parent phase.
-   - `FT_order`: asks whether an ordered prediction is a structural sibling of a known ordered crystal, i.e. whether it can be interpreted as a rearrangement or exchange of local motifs within a shared parent lattice.
+The workflow has two explicit stages:
 
-## Installation
+1. **Reference preparation**: calculate a SWORD family dictionary and child label for
+every structure in a preprocessed ICSD reference dataframe.
+2. **Benchmarking**: match each query structure to that reference and report whether
+its family contains known ordered and/or disordered ICSD members.
 
-Create a Python 3.10+ environment and install the dependencies:
+The scripts do not distribute ICSD data, infer experimental existence, calculate
+thermodynamic stability, or relax structures. ICSD-derived inputs must be obtained and
+used in accordance with the applicable license.
+
+## Environment and reproducibility
+
+The pinned environment in [`requirements.txt`](requirements.txt) was smoke-tested with
+**Python 3.11**. It pins `pymatgen==2024.11.13` because the current unbounded
+`pymatgen` release is incompatible with `SWORDlib==0.1.1` at import time.
+
+Create an isolated environment and install the tested dependencies:
 
 ```bash
-pip install -r requirements.txt
+python -m venv .venv
+source .venv/bin/activate              # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-SWORDlib is imported as:
+Or, with [uv](https://docs.astral.sh/uv/):
 
-```python
-from sword import SWORDFamilyMatcher
+```bash
+uv sync --python 3.11
+source .venv/bin/activate
 ```
 
-## Data preparation
+`uv.lock` records the fully resolved tested environment; use `uv sync --locked` to
+recreate it without resolving newer packages.
 
-ICSD data is not distributed in this repository because of licensing constraints.
+Confirm that both command-line interfaces load:
 
-1. Follow the ICSD preprocessing workflow described in the SWORD repository.
-2. Produce a pickle file containing the preprocessed ICSD reference and a `cif` column with CIF strings.
-3. Run `get_sword_dic.py` to compute the ICSD reference-side SWORD family dictionary.
+```bash
+python get_sword_dic.py --help
+python family_tree_bench.py --help
+```
 
-Example:
+> **Security note:** pandas pickle files are executable serialization formats. Only
+> read pickle files from trusted sources.
+
+## Input data contract
+
+### Reference dataframe
+
+`get_sword_dic.py` accepts a pandas pickle containing one row per reference structure
+and a CIF-string column named `cif` by default. Use `--cif-column` if your column has
+a different name. The script writes the original dataframe plus:
+
+- `SWORD_family_dic`: full dictionary returned by SWORDlib;
+- `SWORD_label`: compact child label extracted from that dictionary, or `ERROR` when
+  SWORDlib did not return a dictionary.
+
+### Query dataframe
+
+`family_tree_bench.py` accepts one or more pandas pickles, each with the same
+CIF-string column. Stable input identifiers and other metadata are retained unchanged.
+The reference dataframe must already contain `SWORD_family_dic`.
+
+For reproducible runs, preserve the exact input pickle files, their hashes, the command
+line, Python version, and the versions in `requirements.txt` alongside every result.
+
+## Run the workflow
+
+### 1. Build the reference family dictionary
+
+Prepare an ICSD dataframe according to the upstream
+[SWORD preprocessing workflow](https://github.com/YuyaoHuang330/SWORD), then run:
 
 ```bash
 python get_sword_dic.py \
   --input-pkl /path/to/ICSD_reference_preprocessed.pkl \
-  --output-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl
+  --output-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl \
+  --workers 1
 ```
 
-The output will include a `SWORD_family_dic` column and a compact `SWORD_label` column.
+The default output path is
+`<input-stem>_SWORD_family_dic.pkl` next to the input. Existing outputs are protected
+from accidental replacement; pass `--overwrite` only when replacement is intentional.
 
-## Benchmarking generated structures
-
-Prepare each generated-structure dataframe as a pickle file with a `cif` column containing CIF strings.
-
-Run the benchmark against the precomputed ICSD reference:
+### 2. Benchmark generated structures
 
 ```bash
 python family_tree_bench.py \
   --reference-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl \
   --query-pkl /path/to/generated_structures.pkl \
-  --output-dir /path/to/output_dir
+  --output-dir /path/to/family_tree_results \
+  --workers 1
 ```
 
-You can pass multiple query pickle files to `--query-pkl`.
+Multiple query files can be benchmarked in one call:
 
-Each output pickle includes:
+```bash
+python family_tree_bench.py \
+  --reference-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl \
+  --query-pkl /path/to/run_a.pkl /path/to/run_b.pkl \
+  --output-dir /path/to/family_tree_results \
+  --workers 4
+```
 
-- `SWORD_family_dic`
-- `SWORD_label`
-- `has_ordered_icsd_family`
-- `has_disordered_icsd_family`
+Each query result is written as
+`<query-stem>_SWORD_family_dic.pkl`. Query filenames must have unique stems so output
+names cannot collide. Existing result files require `--overwrite` to be replaced.
 
-The script prints file-level summaries for `FT_order`, `FT_disorder`, and error rate.
+`--workers` controls `pandarallel`; if it is omitted, the scripts use `NP` from the
+environment or fall back to one worker. Use one worker for the most conservative,
+easiest-to-reproduce execution.
+
+## Output fields and benchmark metrics
+
+Each result pickle preserves every query column and adds:
+
+- `SWORD_family_dic`: SWORDlib matching result for the query structure;
+- `SWORD_label`: query child label, or `ERROR` if the matcher returned no dictionary;
+- `has_ordered_icsd_family`: `1` when `matched_ordered_ids` is non-empty, otherwise `0`;
+- `has_disordered_icsd_family`: `1` when `matched_disordered_ids` is non-empty,
+  otherwise `0`.
+
+For each query file, the command prints:
+
+- **FT_order**: fraction of all query rows with `has_ordered_icsd_family == 1`;
+- **FT_disorder**: fraction of all query rows with `has_disordered_icsd_family == 1`;
+- **error rate**: fraction of rows whose `SWORD_label` is `ERROR`.
+
+These are reference-coverage metrics under the chosen ICSD preprocessing and SWORDlib
+version. They are not probabilities, synthesis predictions, or thermodynamic claims.
+
+## Validation
+
+The repository includes an end-to-end smoke test that creates a one-row NaCl reference
+and query dataset, runs both scripts, and validates the output schema:
+
+```bash
+python -m pip install pytest
+pytest -q
+```
+
+The test is intentionally synthetic and does not replace benchmarking with a licensed,
+curated ICSD reference set.
 
 ## Citation
 
-If you use this repository, please cite the paper below:
+If you use this repository, please cite:
 
 ```bibtex
 @article{yamazaki2026orderdisorder,
@@ -86,4 +172,5 @@ If you use this repository, please cite the paper below:
 }
 ```
 
-If you use SWORDlib directly, please also cite the SWORDlib paper described in the upstream repository.
+If you use SWORDlib directly, also cite the SWORDlib paper specified by the upstream
+project.
