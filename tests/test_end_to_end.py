@@ -23,11 +23,11 @@ def run_cli(*arguments: str, cwd: Path) -> subprocess.CompletedProcess[str]:
 
 
 def test_reference_preparation_and_benchmark_round_trip(tmp_path: Path) -> None:
-    """Both CLIs produce a schema-complete result for a minimal valid structure."""
+    """Both CLIs process a minimal Cu-Au mixed-occupancy structure end to end."""
     structure = Structure(
-        Lattice.cubic(5.64),
-        ["Na", "Cl"],
-        [[0, 0, 0], [0.5, 0.5, 0.5]],
+        Lattice.cubic(3.75),
+        [{"Cu": 0.5, "Au": 0.5}],
+        [[0, 0, 0]],
     )
     cif = structure.to(fmt="cif")
     reference_input = tmp_path / "reference.pkl"
@@ -35,8 +35,12 @@ def test_reference_preparation_and_benchmark_round_trip(tmp_path: Path) -> None:
     reference_output = tmp_path / "reference_sword.pkl"
     results_dir = tmp_path / "results"
 
-    pd.DataFrame({"cif": [cif], "source_id": ["nacl-reference"]}).to_pickle(reference_input)
-    pd.DataFrame({"cif": [cif], "candidate_id": ["nacl-query"]}).to_pickle(query_input)
+    pd.DataFrame({"cif": [cif], "source_id": ["cuau-disordered-reference"]}).to_pickle(
+        reference_input
+    )
+    pd.DataFrame({"cif": [cif], "candidate_id": ["cuau-disordered-query"]}).to_pickle(
+        query_input
+    )
 
     run_cli(
         "get_sword_dic.py",
@@ -64,6 +68,7 @@ def test_reference_preparation_and_benchmark_round_trip(tmp_path: Path) -> None:
     assert "FT_order" in benchmark.stdout
     result = pd.read_pickle(results_dir / "query_SWORD_family_dic.pkl")
     assert len(result) == 1
+    assert result.loc[0, "has_disordered_icsd_family"] == 1
     assert {
         "cif",
         "candidate_id",

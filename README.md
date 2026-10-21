@@ -146,15 +146,17 @@ version. They are not probabilities, synthesis predictions, or thermodynamic cla
 
 ## Validation
 
-The repository includes an end-to-end smoke test that creates a one-row NaCl reference
-and query dataset, runs both scripts, and validates the output schema:
+The repository includes an end-to-end smoke test that creates a one-row synthetic
+Cu–Au mixed-occupancy reference/query dataset, runs both scripts, and validates the
+output schema and disordered-family flag:
 
 ```bash
 python -m pip install pytest
 pytest -q
 ```
 
-The test is intentionally synthetic and does not replace benchmarking with a licensed,
+The test is intentionally synthetic: it is a minimal substitutional-disorder fixture,
+not an experimental Cu–Au dataset. It does not replace benchmarking with a licensed,
 curated ICSD reference set.
 
 ## Citation
