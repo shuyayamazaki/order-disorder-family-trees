@@ -23,15 +23,12 @@ The scripts do not distribute ICSD data, infer experimental existence, calculate
 thermodynamic stability, or relax structures. ICSD-derived inputs must be obtained and
 used in accordance with the applicable license.
 
-## Setup
+## Installation
+
+Use `uv` to create the environment and run the test suite:
 
 ```bash
 uv sync --all-groups --python 3.11
-```
-
-## Test
-
-```bash
 uv run pytest -q
 ```
 
