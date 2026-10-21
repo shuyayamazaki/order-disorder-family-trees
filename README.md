@@ -25,10 +25,12 @@ used in accordance with the applicable license.
 
 ## Installation
 
-Use `uv` to create the environment and run the test suite:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and make Python
+3.11 available. `uv sync` reads `pyproject.toml` and `uv.lock`, creates `.venv`, and
+installs the locked project and test dependencies.
 
 ```bash
-uv sync --all-groups --python 3.11
+uv sync --all-groups --locked --python 3.11
 uv run pytest -q
 ```
 
