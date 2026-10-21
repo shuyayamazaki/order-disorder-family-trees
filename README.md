@@ -23,30 +23,19 @@ The scripts do not distribute ICSD data, infer experimental existence, calculate
 thermodynamic stability, or relax structures. ICSD-derived inputs must be obtained and
 used in accordance with the applicable license.
 
-## Environment and reproducibility
+## Installation
 
-The pinned environment in [`requirements.txt`](requirements.txt) was smoke-tested with
-**Python 3.11**. It pins `pymatgen==2024.11.13` because the current unbounded
-`pymatgen` release is incompatible with `SWORDlib==0.1.1` at import time.
-
-Create an isolated environment and install the tested dependencies:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate              # Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-Or, with [uv](https://docs.astral.sh/uv/):
+This project uses [uv](https://docs.astral.sh/uv/) for environment management. Create
+the environment from the locked project specification with Python 3.11:
 
 ```bash
 uv sync --python 3.11
 source .venv/bin/activate
 ```
 
-`uv.lock` records the fully resolved tested environment; use `uv sync --locked` to
-recreate it without resolving newer packages.
+Use `uv sync --locked` to recreate the environment recorded in `uv.lock` without
+resolving newer packages. `pymatgen==2024.11.13` is pinned because newer unbounded
+releases are incompatible with `SWORDlib==0.1.1` at import time.
 
 Confirm that both command-line interfaces load:
 
@@ -77,7 +66,7 @@ CIF-string column. Stable input identifiers and other metadata are retained unch
 The reference dataframe must already contain `SWORD_family_dic`.
 
 For reproducible runs, preserve the exact input pickle files, their hashes, the command
-line, Python version, and the versions in `requirements.txt` alongside every result.
+line, Python version, and `uv.lock` alongside every result.
 
 ## Run the workflow
 
@@ -142,22 +131,7 @@ For each query file, the command prints:
 - **error rate**: fraction of rows whose `SWORD_label` is `ERROR`.
 
 These are reference-coverage metrics under the chosen ICSD preprocessing and SWORDlib
-version. They are not probabilities, synthesis predictions, or thermodynamic claims.
-
-## Validation
-
-The repository includes an end-to-end smoke test that creates a one-row synthetic
-Cu–Au mixed-occupancy reference/query dataset, runs both scripts, and validates the
-output schema and disordered-family flag:
-
-```bash
-python -m pip install pytest
-pytest -q
-```
-
-The test is intentionally synthetic: it is a minimal substitutional-disorder fixture,
-not an experimental Cu–Au dataset. It does not replace benchmarking with a licensed,
-curated ICSD reference set.
+version.
 
 ## Citation
 

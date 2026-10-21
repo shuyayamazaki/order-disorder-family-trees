@@ -1,5 +1,0 @@
-# Pinned, tested runtime environment for the published workflow.
-pandas==2.2.3
-pandarallel==1.6.5
-pymatgen==2024.11.13
-SWORDlib==0.1.1
