@@ -26,18 +26,15 @@ used in accordance with the applicable license.
 ## Installation
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and make Python
-3.11 available. `uv sync` reads `pyproject.toml` and `uv.lock`, creates `.venv`, and
-installs the locked project and test dependencies.
+3.11 available. `uv sync` creates `.venv` from `pyproject.toml` and `uv.lock`; `--locked`
+requires the committed lockfile to match the project definition.
 
 ```bash
-uv sync --all-groups --locked --python 3.11
-uv run pytest -q
+uv sync --locked --python 3.11
+uv run --group test pytest -q
 ```
 
 ## Input data contract
-
-> **Security note:** pandas pickle files are executable serialization formats. Only
-> read pickle files from trusted sources.
 
 ### Reference dataframe
 
