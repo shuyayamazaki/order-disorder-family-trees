@@ -111,7 +111,7 @@ def main() -> None:
     if "SWORD_family_dic" not in reference_df.columns:
         raise KeyError(
             f"Column 'SWORD_family_dic' was not found in {args.reference_pkl}. "
-            "Run get_sword_dic.py first."
+            "Run scripts/get_sword_dic.py first."
         )
 
     print("Initializing SWORDFamilyMatcher (fill_vacancy=True)...")

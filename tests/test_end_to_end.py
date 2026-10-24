@@ -43,7 +43,7 @@ def test_reference_preparation_and_benchmark_round_trip(tmp_path: Path) -> None:
     )
 
     run_cli(
-        "get_sword_dic.py",
+        "scripts/get_sword_dic.py",
         "--input-pkl",
         str(reference_input),
         "--output-pkl",
@@ -53,7 +53,7 @@ def test_reference_preparation_and_benchmark_round_trip(tmp_path: Path) -> None:
         cwd=REPOSITORY_ROOT,
     )
     benchmark = run_cli(
-        "family_tree_bench.py",
+        "scripts/family_tree_bench.py",
         "--reference-pkl",
         str(reference_output),
         "--query-pkl",

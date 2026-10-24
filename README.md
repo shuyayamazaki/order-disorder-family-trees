@@ -38,7 +38,7 @@ uv run --group test pytest -q
 
 ### Reference dataframe
 
-`get_sword_dic.py` accepts a pandas pickle containing one row per reference structure
+`scripts/get_sword_dic.py` accepts a pandas pickle containing one row per reference structure
 and a CIF-string column named `cif` by default. Use `--cif-column` if your column has
 a different name. The script writes the original dataframe plus:
 
@@ -48,7 +48,7 @@ a different name. The script writes the original dataframe plus:
 
 ### Query dataframe
 
-`family_tree_bench.py` accepts one or more pandas pickles, each with the same
+`scripts/family_tree_bench.py` accepts one or more pandas pickles, each with the same
 CIF-string column. Stable input identifiers and other metadata are retained unchanged.
 The reference dataframe must already contain `SWORD_family_dic`.
 
@@ -63,7 +63,7 @@ Prepare an ICSD dataframe according to the upstream
 [SWORD preprocessing workflow](https://github.com/YuyaoHuang330/SWORD), then run:
 
 ```bash
-python get_sword_dic.py \
+python scripts/get_sword_dic.py \
   --input-pkl /path/to/ICSD_reference_preprocessed.pkl \
   --output-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl \
   --workers 1
@@ -76,7 +76,7 @@ from accidental replacement; pass `--overwrite` only when replacement is intenti
 ### 2. Benchmark generated structures
 
 ```bash
-python family_tree_bench.py \
+python scripts/family_tree_bench.py \
   --reference-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl \
   --query-pkl /path/to/generated_structures.pkl \
   --output-dir /path/to/family_tree_results \
@@ -86,7 +86,7 @@ python family_tree_bench.py \
 Multiple query files can be benchmarked in one call:
 
 ```bash
-python family_tree_bench.py \
+python scripts/family_tree_bench.py \
   --reference-pkl /path/to/ICSD_reference_SWORD_family_dic.pkl \
   --query-pkl /path/to/run_a.pkl /path/to/run_b.pkl \
   --output-dir /path/to/family_tree_results \
